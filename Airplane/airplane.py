@@ -1,21 +1,19 @@
-from bin.nrf24.nrf import NRF
-import time
-import videoCapture
+class Airplane:
 
-"""NRF24l01 init"""
-## NRF() class is a wrapper of the circuit python RF24 
-commA = NRF()
+    def __init__(self):
+        self.current_speed = 0  # read from gps
+        self.direction = 0  # (0-359)  read from arduino
+        self.pitch = 0  # (180,-180) read from arduino
+        self.roll = 0  # (180,-180) read from arduino
+        self.yaw = 0  # (180,-180)
+        self.throttle = 0  # set from user control
+        self.location = None  # Used when interfaced with GPS module
+        self.start_location = None  # used when interfaced with gps module
 
-"""Test for client receive"""
-def test_comms(count=0, test_packets=10, n=0):
-    while count < test_packets:
-        n += commA.send_test()
-        count += 1
-        time.sleep(0.5)
-    return count, n
-print('sent: {} awk: {} pingavg: {}'.format(*test_comms(), commA.pop_average_ping()))
+    def build_airplane_config(self):
+        supported_comms = {'x': 'NRF', 'y': 'LoRa'}
+        gps_enabled = [True, False]
+        choice = supported_comms[input('choose {x} or {y}'.format_map(supported_comms))]
 
-"""Test video"""
-VS = videoCapture.VideoStream()
-payload = VS.get_frame()
-commA.transmitBytes(payload)
+A = Airplane()
+A.build_airplane_config()
