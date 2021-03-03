@@ -1,4 +1,4 @@
-from bin.nrf24.nrf import NRF
+from nrf24.nrf import NRF
 import time
 import videoCapture
 

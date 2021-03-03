@@ -1,4 +1,4 @@
-from circuitpython_nrf24l01.rf24 import RF24
+from rf24 import RF24
 import time
 import struct
 import board
