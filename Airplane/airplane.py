@@ -13,7 +13,10 @@ class Airplane:
     def build_airplane_config(self):
         supported_comms = {'x': 'NRF', 'y': 'LoRa'}
         gps_enabled = [True, False]
-        choice = supported_comms[input('choose {x} or {y}'.format_map(supported_comms))]
+        print('Enter available comms: ')
+        comms_selection = supported_comms[input('x: {x} \ny: {y} \nz: {x} & {y}\n'.format_map(supported_comms))]
+
+
 
 A = Airplane()
 A.build_airplane_config()
