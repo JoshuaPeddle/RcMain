@@ -2,6 +2,9 @@ import time
 import struct
 import board
 import digitalio
+import base64
+import numpy as np
+import cv2
 # if running this on a ATSAMD21 M0 based board
 # from circuitpython_nrf24l01.rf24_lite import RF24
 from circuitpython_nrf24l01.rf24 import RF24
@@ -44,6 +47,38 @@ def client(timeout=60):
             payload_size, pipe_number = (nrf.any(), nrf.pipe)
             # fetch 1 payload from RX FIFO
             buffer = nrf.read()  # also clears nrf.irq_dr status flag
+            #print(buffer)
+            print(
+                "Received {} bytes on pipe {}: {}".format(
+                    payload_size, pipe_number, buffer
+                )
+            )
+            start = time.monotonic()
+    # recommended behavior is to keep in TX mode while idle
+    nrf.listen = False  # put the nRF24L01 is in TX mode
+def video_client(timeout=60):
+    """Polls the radio and prints the received value. This method expires
+    after 6 seconds of no received transmission"""
+    nrf.listen = True  # put radio into RX mode and power up
+
+    start = time.monotonic()
+    while (time.monotonic() - start) < timeout:
+        if nrf.available():
+            # grab information about the received payload
+            payload_size, pipe_number = (nrf.any(), nrf.pipe)
+            # fetch 1 payload from RX FIFO
+            buffer = nrf.read()  # also clears nrf.irq_dr status flag
+            try:
+
+                img = base64.b64decode(buffer)
+                npimg = np.fromstring(img, dtype=np.uint8)
+                source = cv2.imdecode(npimg, 1)
+                cv2.imshow("Stream", source)
+                cv2.waitKey(1)
+
+            except KeyboardInterrupt:
+                cv2.destroyAllWindows()
+                break
             #print(buffer)
             print(
                 "Received {} bytes on pipe {}: {}".format(

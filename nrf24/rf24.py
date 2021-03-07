@@ -24,6 +24,7 @@
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_nRF24L01.git"
 import time
+
 from micropython import const
 from .wrapper import SPIDevCtx, SPIDevice
 

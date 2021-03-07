@@ -87,3 +87,15 @@ class NRF(RF24):
             return response
         response = True
         return response
+
+    def request_telemetry(self):
+        print(self)
+        data = {'speed': 10,
+                'heading': 270,
+                'pitch': 10,
+                'roll': 20,
+                'yaw': 10,
+                'throttle': 5,
+                'altitude': 100}
+        # send request packet, wait for responce
+        return data

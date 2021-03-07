@@ -1,6 +1,7 @@
 import pyautogui
 import numpy as np
-import cv2
+import  cv2
+import base64
 import threading
 import time
 
@@ -11,14 +12,14 @@ class VideoStream(threading.Thread):
     def __init__(self,mode= 'test'):
         threading.Thread.__init__(self)
         self.mode = mode
-        self.frame = self.capture()
+        self.frame = self.capture2()
         self.frame_used = False
         self.count = 0
 
     def run(self):
         while self.count <999:
             if self.frame_used == True:
-                self.frame = self.capture()
+                self.frame = self.capture2()
             time.sleep(delay)
 
     def get_frame(self):
@@ -42,4 +43,17 @@ class VideoStream(threading.Thread):
         #print(a2)
         return bytes
 
-V = VideoStream().capture()
+    def capture2(self):
+        capture = pyautogui.screenshot()
+        cv2cap = cv2.cvtColor(np.array(capture), cv2.COLOR_RGB2BGR)
+        frame = cv2.resize(cv2cap, (100, 80))  # resize the frame
+        encoded, buffer = cv2.imencode('.jpg', frame)
+        jpg_as_text = base64.b64encode(buffer)
+        #upscaled = cv2.resize(a2, (int(shape[1]/1.2), int(shape[0]/1.2)),interpolation = cv2.INTER_CUBIC)
+        #cv2.imshow("image", upscaled)
+        #cv2.waitKey(0)
+        #print(a2)
+        return jpg_as_text
+
+
+V = VideoStream().capture2()

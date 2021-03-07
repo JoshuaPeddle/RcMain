@@ -2,7 +2,7 @@ class Airplane:
 
     def __init__(self):
         self.current_speed = 0  # read from gps
-        self.direction = 0  # (0-359)  read from arduino
+        self.heading = 0  # (0-359)  read from arduino
         self.pitch = 0  # (180,-180) read from arduino
         self.roll = 0  # (180,-180) read from arduino
         self.yaw = 0  # (180,-180)

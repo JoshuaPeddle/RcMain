@@ -4,6 +4,7 @@ import struct
 import board
 import digitalio
 
+
 # if running this on a ATSAMD21 M0 based board
 # from circuitpython_nrf24l01.rf24_lite import RF24
 from circuitpython_nrf24l01.rf24 import RF24
@@ -101,6 +102,29 @@ def video_stream(count=20):
             )
         time.sleep(2)
         count -= 1
+
+def video_stream2(count=20):
+  """Transmits a videostream"""
+    nrf.listen = False  # ensures the nRF24L01 is in TX mode
+
+    while count:
+        payload = video_stream.get_frame()
+        start_timer = time.monotonic_ns()  # start timer
+        result = nrf.send(payload)
+        end_timer = time.monotonic_ns()  # end timr
+        if not result:
+            print("send() failed or timed out")
+        else:
+            print(
+                "Transmission successful! Time to Transmit: "
+                "{} us. Sent: {}".format(
+                    (end_timer - start_timer) / 1000, '!S'
+                )
+            )
+        time.sleep(2)
+        count -= 1
+
+
 
 
 t = time.time()
