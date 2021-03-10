@@ -11,7 +11,7 @@ import digitalio
 class NRF(RF24):
     """My custom wrapper of the RF24 class V2.0.1"""
 
-    def __init__(self, ce=None, csn=None, pa=None, data_r=None, cha=None):
+    def __init__(self,radioNum, ce=None, csn=None, pa=None, data_r=None, cha=None):
         if not ce: ce = digitalio.DigitalInOut(board.D22)
         if not csn: csn = digitalio.DigitalInOut(board.D8)
         spi = board.SPI()
@@ -28,7 +28,7 @@ class NRF(RF24):
         print(self.print_details())
         # addresses needs to be in a buffer protocol object (bytearray)
         address = [b"1Node", b"2Node"]
-        radio_number = bool(0)
+        radio_number = bool(radioNum)
         # set TX address of RX node into the TX pipe
         self.open_tx_pipe(address[radio_number])  # always uses pipe 0
         # set RX address of TX node into an RX pipe
