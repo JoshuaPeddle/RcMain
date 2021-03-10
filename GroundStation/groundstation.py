@@ -40,9 +40,19 @@ class StringTest(threading.Thread):
 T = StringTest()
 L.start()
 T.start()
+import random
+import time
+last_update = time.time()
 
 while True:
+    t =  time.time()
     # Update LiveView
     for event in L.game.event.get():
         if event.type == L.game.QUIT:
             L.crashed = True
+    if last_update < t - .5:
+        last_update = t
+        #print('telemupdate')
+        telem = commA.request_telemetry()
+        telem['pitch'] = random.randint(-90,90)
+        L.telemetry = telem

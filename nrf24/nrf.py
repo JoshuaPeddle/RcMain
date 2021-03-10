@@ -1,4 +1,7 @@
-from rf24 import RF24
+try:
+    from rf24 import RF24
+except:
+    from nrf24.rf24 import RF24
 import time
 import struct
 import board
@@ -89,10 +92,10 @@ class NRF(RF24):
         return response
 
     def request_telemetry(self):
-        print(self)
+        #print(self)
         data = {'speed': 10,
                 'heading': 270,
-                'pitch': 10,
+                'pitch': 20,
                 'roll': 20,
                 'yaw': 10,
                 'throttle': 5,

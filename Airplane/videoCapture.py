@@ -44,15 +44,25 @@ class VideoStream(threading.Thread):
         return bytes
 
     def capture2(self):
-        capture = pyautogui.screenshot()
-        cv2cap = cv2.cvtColor(np.array(capture), cv2.COLOR_RGB2BGR)
-        frame = cv2.resize(cv2cap, (100, 80))  # resize the frame
-        encoded, buffer = cv2.imencode('.jpg', frame)
+        # capture = pyautogui.screenshot()
+        # cv2cap = cv2.cvtColor(np.array(capture), cv2.COLOR_RGB2BGR)
+        cv2cap = cv2.imread('/home/pi/Downloads/RcMain-main/GroundStation/test.png')
+        # print(cv2cap)
+        frame = cv2.resize(cv2cap, (150, 150))  # resize the frame
+        # print(len(frame))
+        encoded, buffer = cv2.imencode('.png', frame)
         jpg_as_text = base64.b64encode(buffer)
-        #upscaled = cv2.resize(a2, (int(shape[1]/1.2), int(shape[0]/1.2)),interpolation = cv2.INTER_CUBIC)
-        #cv2.imshow("image", upscaled)
-        #cv2.waitKey(0)
-        #print(a2)
+        print(jpg_as_text)
+        print(len(jpg_as_text))
+        # cv2.startWindowThread()
+        # img = base64.b64decode(jpg_as_text.strip())
+        # npimg = np.fromstring(img,dtype=np.uint8)
+        # source = cv2.imdecode(npimg,1)
+        # cv2.imshow('stream',source)
+        # cv2.waitKey()
+
+        # print(img)
+
         return jpg_as_text
 
 

@@ -27,13 +27,19 @@ class LiveView(threading.Thread):
         self.crashed = False
         self.test_string = None
         self.font = pygame.font.SysFont(pygame.font.get_fonts()[1], size=24)
+        self.frame_skip = 1
 
     def run(self):
         while not self.crashed:
+            if self.frame_skip != 0:
+                pygame.display.update()
+                self.clock.tick()
+                self.frame_skip = 2
+                self.clock.tick()
             # White background
-            #self.screen.fill(white)
+            # self.screen.fill(white)
             # Filler frame for testing
-            #self.draw_test_frame()
+            # self.draw_test_frame()
             self.set_blue_brown_horizon()
             # Horizon line, to be tied to roll of aircraft
             self.draw_horizon()
@@ -45,18 +51,21 @@ class LiveView(threading.Thread):
             self.draw_airspeed()
             self.draw_fps()
             pygame.display.update()
-            self.clock.tick(120)
+            self.clock.tick()
 
     def set_blue_brown_horizon(self):
-        middle_y = self.screen_height / 2.5
-        rect = Rect(0, 0, self.screen_width,middle_y )
-        pygame.draw.rect(self.screen, pygame.color.Color(77, 166, 255), rect)
-        rect = Rect(0, middle_y, self.screen_width, self.screen_height)
-        pygame.draw.rect(self.screen, pygame.color.Color(128, 64, 0), rect)
-
+        middle_y = (self.screen_height / 2) - ((self.screen_height / 2) * (self.telemetry['pitch'] * .01))
+        pygame.draw.rect(self.screen,
+                         pygame.color.Color(77, 166, 255),  #BLUE
+                         Rect(0, 0, self.screen_width, middle_y))
+        pygame.draw.rect(self.screen,
+                         pygame.color.Color(128, 64, 0),  #BROWN
+                         Rect(0, middle_y, self.screen_width, self.screen_height))
 
     def set_telemetry(self, t):
         self.telemetry = t
+
+    '''Draw functions, call these in run()'''
 
     def draw_test_frame(self):
         # print(self)
@@ -73,13 +82,13 @@ class LiveView(threading.Thread):
         txt = f'Speed   {str(self.telemetry["speed"])}kn'
         img = self.font.render(txt, True, pygame.color.Color('black'))
         # display heading on top of screen
-        self.screen.blit(img, (20, self.screen_height/2))
+        self.screen.blit(img, (20, self.screen_height / 2))
 
     def draw_altitude(self):
         txt = f'Alt   {str(self.telemetry["altitude"])}ft'
         img = self.font.render(txt, True, pygame.color.Color('black'))
         # display heading on top of screen
-        self.screen.blit(img, (self.screen_width - img.get_width()*1.5, self.screen_height/2))
+        self.screen.blit(img, (self.screen_width - img.get_width() * 1.5, self.screen_height / 2))
 
     def draw_heading(self):
         txt = f'Heading   {str(self.telemetry["heading"])}°'
