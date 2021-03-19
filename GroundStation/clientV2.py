@@ -1,7 +1,7 @@
 import time
-import struct
-import board
-import digitalio
+#import struct
+#import board
+#import digitalio
 import base64
 import numpy as np
 import cv2
@@ -36,7 +36,49 @@ def client(timeout=60):
     nrf.listen = False  # put the nRF24L01 is in TX mode
 
 
-def video_client(timeout=60):
+def video_client_awk(timeout=60):
+    """Polls the radio and prints the received value. This method expires
+    after 6 seconds of no received transmission"""
+    nrf.listen = True  # put radio into RX mode and power up
+    payload = ''
+    last = ''
+    start = time.monotonic()
+    while (time.monotonic() - start) < timeout:
+        if nrf.available():
+            payload_size, pipe_number = (nrf.any(), nrf.pipe)
+            buffer= nrf.read(payload_size)
+            if buffer != b'y':
+                try:
+                    dec = buffer.decode()
+                except UnicodeDecodeError:
+                    continue
+                if dec != last:
+                    last = dec
+                    payload = payload + dec
+            else:
+                try:
+                    source = cv2.imdecode(np.fromstring(base64.b64decode(payload.strip()), dtype=np.uint8), 1)
+                    #cv2.imshow("Stream", source)
+                    #cv2.waitKey(1000)
+                    #time.sleep(0.001)
+                    #cv2.destroyWindow("Stream")
+                    print('successfull transmission')
+                    payload = ''
+                except:
+                    payload= ''
+                    print('failed frame')
+            nrf.listen = False
+            result = False
+            while not result:
+                result = nrf.send(b'a')
+            nrf.listen = True
+            start = time.monotonic()
+    # recommended behavior is to keep in TX mode while idle
+    nrf.listen = False  # put the nRF24L01 is in TX mode
+
+
+
+def video_client_noawk(timeout=60):
     """Polls the radio and prints the received value. This method expires
     after 6 seconds of no received transmission"""
     nrf.listen = True  # put radio into RX mode and power up
@@ -71,4 +113,7 @@ def video_client(timeout=60):
             start = time.monotonic()
     # recommended behavior is to keep in TX mode while idle
     nrf.listen = False  # put the nRF24L01 is in TX mode
-video_client()
+if __name__ == "__main__":
+    userSel = input('0: client, 1: video_client')
+    runnables = {'0':client, '1':video_client_awk}
+    runnables[userSel]()

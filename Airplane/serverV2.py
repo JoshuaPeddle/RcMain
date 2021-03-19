@@ -85,7 +85,50 @@ def video_stream2(count=200):
             )
         time.sleep(.01)
 
-t = time.time()
-#master()
-video_stream2()
-print('time to finish: '+str(time.time()-t))
+def video_stream_awk(count=200):
+    """Transmits a videostream"""
+    nrf.listen = False  # ensures the nRF24L01 is in TX mode
+    import struct
+    while count:
+        payload = video_stream.get_frame()
+        #print(payload)
+        split_payload = [payload[i:i + 32] for i in range(0, len(payload), 32)]
+        #struct.pack("=H", bytes(split_payload))
+        # buffer = struct.pack("p", payload)
+        print(len(split_payload))
+        start_timer = time.monotonic_ns()  # start timer
+
+        for load in split_payload:
+            result = False
+            while not result:
+                result =nrf.send(load)
+            time.sleep(.0001)
+        result = False
+        time.sleep(.001)
+        while not result:
+            result = nrf.send(b'y')
+
+        nrf.listen = True
+        buffer = nrf.read()
+        while buffer != b'a':
+            buffer = nrf.read()
+        nrf.listen = False
+        end_timer = time.monotonic_ns()  # end timr
+        if not result:
+            print("send() failed or timed out")
+        else:
+            print(
+                "Transmission successful! Time to Transmit: "
+                "{} us. Sent: {}".format(
+                    (end_timer - start_timer) / 1000, '!S'
+                )
+            )
+        time.sleep(.01)
+
+
+if __name__ == "__main__":
+    t = time.time()
+    userSel = input('0: client, 1: video_client')
+    runnables = {'0':master, '1':video_stream2}
+    runnables[userSel]()
+    print('time to finish: ' + str(time.time() - t))
