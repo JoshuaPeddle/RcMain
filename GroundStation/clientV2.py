@@ -57,9 +57,13 @@ def video_client_awk(timeout=60):
                     payload = payload + dec
             else:
                 try:
-                    source = cv2.imdecode(np.fromstring(base64.b64decode(payload.strip()), dtype=np.uint8), 1)
+
+                    img = base64.b64decode(payload.strip())
+                    npimg = np.fromstring(img, dytpe=np.uint8)
+                    source = cv2.imdecode(npimg, flags=cv2.IMREAD_ANYCOLOR)
+                    source = cv2.resize(source, (600,400))
                     #cv2.imshow("Stream", source)
-                    #cv2.waitKey(1000)
+                    #cv2.waitKey(500)
                     #time.sleep(0.001)
                     #cv2.destroyWindow("Stream")
                     print('successfull transmission')
